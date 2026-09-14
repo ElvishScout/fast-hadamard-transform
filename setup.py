@@ -132,36 +132,37 @@ if not SKIP_CUDA_BUILD:
     if FORCE_CXX11_ABI:
         torch._C._GLIBCXX_USE_CXX11_ABI = True
 
-    ext_modules.append(
-        CUDAExtension(
-            name="fast_hadamard_transform_cuda",
-            sources=[
-                "csrc/fast_hadamard_transform.cpp",
-                "csrc/fast_hadamard_transform_cuda.cu",
-            ],
-            extra_compile_args={
-                "cxx": ["-O3"],
-                "nvcc":
-                    [
-                        "-O3",
-                        "-U__CUDA_NO_HALF_OPERATORS__",
-                        "-U__CUDA_NO_HALF_CONVERSIONS__",
-                        "-U__CUDA_NO_BFLOAT16_OPERATORS__",
-                        "-U__CUDA_NO_BFLOAT16_CONVERSIONS__",
-                        "-U__CUDA_NO_BFLOAT162_OPERATORS__",
-                        "-U__CUDA_NO_BFLOAT162_CONVERSIONS__",
-                        "--expt-relaxed-constexpr",
-                        "--expt-extended-lambda",
-                        "--use_fast_math",
-                        "--ptxas-options=-v",
-                        "-lineinfo",
-                    ]
-                    + append_nvcc_threads()
-                    + cc_flag,
-            },
-            include_dirs=[this_dir],
+    if CUDA_HOME is not None:
+        ext_modules.append(
+            CUDAExtension(
+                name="fast_hadamard_transform_cuda",
+                sources=[
+                    "csrc/fast_hadamard_transform.cpp",
+                    "csrc/fast_hadamard_transform_cuda.cu",
+                ],
+                extra_compile_args={
+                    "cxx": ["-O3"],
+                    "nvcc":
+                        [
+                            "-O3",
+                            "-U__CUDA_NO_HALF_OPERATORS__",
+                            "-U__CUDA_NO_HALF_CONVERSIONS__",
+                            "-U__CUDA_NO_BFLOAT16_OPERATORS__",
+                            "-U__CUDA_NO_BFLOAT16_CONVERSIONS__",
+                            "-U__CUDA_NO_BFLOAT162_OPERATORS__",
+                            "-U__CUDA_NO_BFLOAT162_CONVERSIONS__",
+                            "--expt-relaxed-constexpr",
+                            "--expt-extended-lambda",
+                            "--use_fast_math",
+                            "--ptxas-options=-v",
+                            "-lineinfo",
+                        ]
+                        + append_nvcc_threads()
+                        + cc_flag,
+                },
+                include_dirs=[this_dir],
+            )
         )
-    )
 
 
 def get_package_version():
